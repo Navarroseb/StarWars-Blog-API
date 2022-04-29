@@ -1,144 +1,234 @@
 from flask_sqlalchemy import SQLAlchemy
+
 db = SQLAlchemy()
 
-class Users(db.Model):
+
+class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    last_name = db.Column(db.String(250), nullable=False)
-    email = db.Column(db.String(250), unique=True, nullable=False)
-    password = db.Column(db.Integer, nullable=False)
-    favCharacter = db.relationship('favorites_characters', backref='users.id', uselist=False)
-    favPlanets = db.relationship('favorites_planets', backref='users.id', uselist=False)
-    favStarships = db.relationship('favorites_starships', backref='users.id', uselist=False)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "last_name": self.last_name,
-            "email": self.email,
-            "password": self.password
-        }
+    password = db.Column(db.String(250))
+    email = db.Column(db.String(250))
+    people = db.relationship('Person', secondary='favorites_people', backref='users')
+    planets = db.relationship('Planet', secondary='favorites_planets', backref='users')
+    ships = db.relationship('Ship', secondary='favorites_ships', backref='users')
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()    
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def get_people(self):
+        return list(map(lambda person: person.to_dict(), self.people))
     
-class Characters(db.Model):
-    __tablename__ = 'characters'
+    def get_planets(self):
+        return list(map(lambda planet: planet.to_dict(), self.planets))
+    
+    def get_ships(self):
+        return list(map(lambda ship: ship.to_dict(), self.ships))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "password": self.password,
+            "email": self.email
+        }
+
+class Person(db.Model):
+    __tablename__ = 'people'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250))
-    birth_year = db.Column(db.Integer())
+    height = db.Column(db.String(250))
+    mass = db.Column(db.String(250))
+    hair_color = db.Column(db.String(250))
+    skin_color = db.Column(db.String(250))
+    eye_color = db.Column(db.String(250))
+    birth_year = db.Column(db.String(250))
     gender = db.Column(db.String(250))
-    height = db.Column(db.Integer())
-    characterFav = db.relationship('favorites_characters', backref='characters.id', uselist=False)
 
-    def serialize(self):
+    def save(self):
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
-            "birth_year": self.birth_year,
-            "gender": self.gender,
             "height": self.height,
+            "mass": self.mass,
+            "hair_color": self.hair_color,
+            "skin_color": self.skin_color,
+            "eye_color": self.eye_color,
+            "birth_year": self.birth_year,
+            "gender": self.gender
         }
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()    
-    
-class Favorites_characters(db.Model):
-    __tablename__ = 'favorites_characters'
-    id = db.Column(db.Integer, primary_key=True)
-    users_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    Characters_id = db.Column(db.Integer, db.ForeignKey("characters.id"), nullable=False)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "users_id": self.users_id,
-            "Characters_id": self.Characters_id,
-        }
-    
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-class Planets(db.Model):
+        
+class Planet(db.Model):
     __tablename__ = 'planets'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250))
+    rotation_period = db.Column(db.String(250))
+    orbital_period = db.Column(db.String(250))
+    diameter = db.Column(db.String(250))
     climate = db.Column(db.String(250))
-    population = db.Column(db.Integer)
+    gravity = db.Column(db.String(250)) 
     terrain = db.Column(db.String(250))
-    planetsFav = db.relationship('favorites_planets', backref='planets.id', uselist=False)
+    surface_water = db.Column(db.String(250))
+    population = db.Column(db.String(250))
+    
 
-    def serialize(self):
+    def save(self):
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
+            "rotation_period": self.rotation_period,
+            "orbital_period": self.orbital_period,
+            "diameter": self.diameter,
             "climate": self.climate,
-            "population": self.population,
+            "gravity": self.gravity,
             "terrain": self.terrain,
+            "surface_water": self.surface_water,
+            "population": self.population
         }
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()    
-    
-class Favorites_planets(db.Model):
-    __tablename__ = 'favorites_planets'
-    id = db.Column(db.Integer, primary_key=True)
-    users_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    Planets_id = db.Column(db.Integer, db.ForeignKey("planets.id"), nullable=False)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "users_id": self.users_id,
-            "Planets_id": self.Planets_id,
-        }
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-       
-class Starships(db.Model):
-    __tablename__ = 'starships'
+class Ship(db.Model):
+    __tablename__ = 'ships'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250))
     model = db.Column(db.String(250))
-    passengers_capacity = db.Column(db.Integer)
-    pilots = db.Column(db.String(250))
-    starshipFav = db.relationship('favorites_starships', backref='starships.id', uselist=False)
+    manufacturer = db.Column(db.String(250))
+    cost_in_credits = db.Column(db.String(250))
+    length = db.Column(db.String(250))
+    max_atmosphering_speed = db.Column(db.String(250))
+    crew = db.Column(db.String(250))
+    passengers = db.Column(db.String(250))
+    cargo_capacity = db.Column(db.String(250))
+    consumables = db.Column(db.String(250))
+    hyperdrive_rating = db.Column(db.String(250))
+    MGLT = db.Column(db.String(250))
+    starship_class = db.Column(db.String(250))
     
 
-    def serialize(self):
+    def save(self):
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "model": self.model,
-            "passengers_capacity": self.passengers_capacity,
-            "pilots": self.pilots,
+            "manufacturer": self.manufacturer,
+            "cost_in_credits": self.cost_in_credits,
+            "length": self.length,
+            "max_atmosphering_speed": self.max_atmosphering_speed,
+            "crew": self.crew,
+            "passengers": self.passengers,
+            "cargo_capacity": self.cargo_capacity,
+            "consumables": self.consumables,
+            "hyperdrive_rating": self.hyperdrive_rating,
+            "MGLT": self.MGLT,
+            "starship_class": self.starship_class
         }
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-    
-class Favorites_starships(db.Model):
-    __tablename__ = 'favorites_starships'
+class FavoritePerson(db.Model):
+    __tablename__ = 'favorites_people'
     id = db.Column(db.Integer, primary_key=True)
-    users_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    Starships_id = db.Column(db.Integer, db.ForeignKey("starships.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    person_id = db.Column(db.Integer, db.ForeignKey('people.id'))
 
-    def serialize(self):
+    def save(self):
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
         return {
             "id": self.id,
-            "users_id": self.users_id,
-            "Starships_id": self.Starships_id,
+            "user_id": self.user_id,
+            "person_id": self.person_id
         }
 
+class FavoritePlanet(db.Model):
+    __tablename__ = 'favorites_planets'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
+
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id
+        }
+
+class FavoriteShip(db.Model):
+    __tablename__ = 'favorites_ships'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    ship_id = db.Column(db.Integer, db.ForeignKey('ships.id'))
+
+    def save(self):
+        db.session.add(self)  # INSERT
+        db.session.commit()  # Guarda el INSERT
+
+    def update(self):
+        db.session.commit()  # Guarda el UPDATE
+
+    def delete(self):
+        db.session.delete(self)  # DELETE
+        db.session.commit()  # Guarda el DELETE
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "ship_id": self.ship_id
+        }
