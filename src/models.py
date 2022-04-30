@@ -10,18 +10,18 @@ class User(db.Model):
     email = db.Column(db.String(250))
     people = db.relationship('Person', secondary='favorites_people', backref='users')
     planets = db.relationship('Planet', secondary='favorites_planets', backref='users')
-    ships = db.relationship('Ship', secondary='favorites_ships', backref='users')
+    
 
     def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
+        db.session.add(self)  
+        db.session.commit()  
 
     def update(self):
-        db.session.commit()  # Guarda el UPDATE
+        db.session.commit()  
 
     def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
+        db.session.delete(self)  
+        db.session.commit()  
 
     def get_people(self):
         return list(map(lambda person: person.to_dict(), self.people))
@@ -52,15 +52,15 @@ class Person(db.Model):
     gender = db.Column(db.String(250))
 
     def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
+        db.session.add(self)  
+        db.session.commit()  
 
     def update(self):
-        db.session.commit()  # Guarda el UPDATE
+        db.session.commit()  
 
     def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
+        db.session.delete(self)  
+        db.session.commit()  
 
     def to_dict(self):
         return {
@@ -90,15 +90,15 @@ class Planet(db.Model):
     
 
     def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
+        db.session.add(self)  
+        db.session.commit()  
 
     def update(self):
-        db.session.commit()  # Guarda el UPDATE
+        db.session.commit()  
 
     def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
+        db.session.delete(self)  
+        db.session.commit()  
 
     def to_dict(self):
         return {
@@ -114,52 +114,7 @@ class Planet(db.Model):
             "population": self.population
         }
 
-class Ship(db.Model):
-    __tablename__ = 'ships'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250))
-    model = db.Column(db.String(250))
-    manufacturer = db.Column(db.String(250))
-    cost_in_credits = db.Column(db.String(250))
-    length = db.Column(db.String(250))
-    max_atmosphering_speed = db.Column(db.String(250))
-    crew = db.Column(db.String(250))
-    passengers = db.Column(db.String(250))
-    cargo_capacity = db.Column(db.String(250))
-    consumables = db.Column(db.String(250))
-    hyperdrive_rating = db.Column(db.String(250))
-    MGLT = db.Column(db.String(250))
-    starship_class = db.Column(db.String(250))
-    
 
-    def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
-
-    def update(self):
-        db.session.commit()  # Guarda el UPDATE
-
-    def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "model": self.model,
-            "manufacturer": self.manufacturer,
-            "cost_in_credits": self.cost_in_credits,
-            "length": self.length,
-            "max_atmosphering_speed": self.max_atmosphering_speed,
-            "crew": self.crew,
-            "passengers": self.passengers,
-            "cargo_capacity": self.cargo_capacity,
-            "consumables": self.consumables,
-            "hyperdrive_rating": self.hyperdrive_rating,
-            "MGLT": self.MGLT,
-            "starship_class": self.starship_class
-        }
 
 class FavoritePerson(db.Model):
     __tablename__ = 'favorites_people'
@@ -168,15 +123,15 @@ class FavoritePerson(db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey('people.id'))
 
     def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
+        db.session.add(self)  
+        db.session.commit()  
 
     def update(self):
-        db.session.commit()  # Guarda el UPDATE
+        db.session.commit()  
 
     def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
+        db.session.delete(self)  
+        db.session.commit()  
 
     def to_dict(self):
         return {
@@ -192,15 +147,15 @@ class FavoritePlanet(db.Model):
     planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
 
     def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
+        db.session.add(self)  
+        db.session.commit()  
 
     def update(self):
-        db.session.commit()  # Guarda el UPDATE
+        db.session.commit()  
 
     def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
+        db.session.delete(self)  
+        db.session.commit()  
 
     def to_dict(self):
         return {
@@ -209,26 +164,3 @@ class FavoritePlanet(db.Model):
             "planet_id": self.planet_id
         }
 
-class FavoriteShip(db.Model):
-    __tablename__ = 'favorites_ships'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    ship_id = db.Column(db.Integer, db.ForeignKey('ships.id'))
-
-    def save(self):
-        db.session.add(self)  # INSERT
-        db.session.commit()  # Guarda el INSERT
-
-    def update(self):
-        db.session.commit()  # Guarda el UPDATE
-
-    def delete(self):
-        db.session.delete(self)  # DELETE
-        db.session.commit()  # Guarda el DELETE
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "ship_id": self.ship_id
-        }

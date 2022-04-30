@@ -9,7 +9,8 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
-#from models import Person
+from models import Person
+from models import Planet
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -21,12 +22,12 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
-# Handle/serialize errors like a JSON object
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
-# generate sitemap with all your endpoints
+
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
@@ -100,7 +101,7 @@ def delete_favorite_ship(user_id, favorite_ship_id):
 
     return jsonify(favorite_ship.to_dict()), 201
 
-#People
+
 
 @app.route("/people", methods=['GET'])
 def getPeople():
@@ -141,11 +142,11 @@ def createPerson():
     
     return jsonify(person.to_dict()), 201
 
-#Planets
+
 
 @app.route("/planets", methods=['GET'])
 def getPlanets():
-    planets = Planet.query.all()
+    planets = planet.query.all()
     planets = list(map(lambda planet: planet.to_dict(), planets))
     return jsonify(planets), 200
 
@@ -174,44 +175,7 @@ def createPlanet():
     
     return jsonify(planet.to_dict()), 201
 
-# Ships
 
-@app.route("/ships", methods=['GET'])
-def getShips():
-    ships = Ship.query.all()
-    ships = list(map(lambda ship: ship.to_dict(), ships))
-    return jsonify(ships), 200
-
-@app.route("/ships/<int:ship_id>", methods = ["GET"])
-def getShip(ship_id):
-    ship = Ship.query.get(ship_id)
-    
-    if ship:
-        return jsonify(ship.to_dict())
-
-    return jsonify({"message": "Ship not found"})
-
-@app.route("/ships", methods=['POST'])
-def createShip():
-    ship = Ship()
-    ship.name = request.json.get('name')
-    ship.model = request.json.get('model')
-    ship.manufacturer = request.json.get('manufacturer')
-    ship.cost_in_credits = request.json.get('cost_in_credits')
-    ship.length = request.json.get('length')
-    ship.max_atmosphering_speed = request.json.get('max_atmosphering_speed')
-    ship.crew = request.json.get('crew')
-    ship.passengers = request.json.get('passengers')
-    ship.cargo_capacity = request.json.get('cargo_capacity')
-    ship.consumables = request.json.get('consumables')
-    ship.hyperdrive_rating = request.json.get('hyperdrive_rating')
-    ship.MGLT = request.json.get('MGLT')
-    ship.starship_class = request.json.get('starship_class')
-    ship.save()
-    
-    return jsonify(ship.to_dict()), 201
-    
-# this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
