@@ -32,8 +32,6 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-#User
-
 @app.route("/users", methods=['GET'])
 def get_users():
     users = User.query.all()
@@ -42,15 +40,13 @@ def get_users():
 
 @app.route("/users/<int:user_id>/favorites", methods=['GET'])
 def get_user_favorites(user_id):
-    user = User.query.get(user_id)
-    people = user.get_people()
-    planets = user.get_planets()
-    ships = user.get_ships()
-
+    user = Users.query.get(user_id)
+    people = users.get_people()
+    planets = users.get_planets()
+    
     return jsonify({
         "people": people,
         "planets": planets,
-        "ships": ships
     }), 200
 
 @app.route("/users", methods=['POST'])
@@ -71,15 +67,6 @@ def create_favorite_planet(user_id):
     
     return jsonify(favorite_planet.to_dict()), 201
 
-@app.route("/users/<int:user_id>/favorites_ships", methods=['POST'])
-def create_favorite_ship(user_id):
-    favorite_ship = FavoriteShip()
-    favorite_ship.user_id = user_id
-    favorite_ship.ship_id = request.json.get('ship_id')
-    favorite_ship.save()
-    
-    return jsonify(favorite_ship.to_dict()), 201
-
 @app.route("/users/<int:user_id>/favorites_people/<int:favorite_person_id>", methods=['DELETE'])
 def delete_favorite_person(user_id, favorite_person_id):
     favorite_person = FavoritePerson.query.get(favorite_person_id)
@@ -93,13 +80,6 @@ def delete_favorite_planet(user_id, favorite_planet_id):
     favorite_planet.delete()
 
     return jsonify(favorite_planet.to_dict()), 201
-
-@app.route("/users/<int:user_id>/favorites_ships/<int:favorite_ship_id>", methods=['DELETE'])
-def delete_favorite_ship(user_id, favorite_ship_id):
-    favorite_ship = FavoriteShip.query.get(favorite_ship_id)
-    favorite_ship.delete()
-
-    return jsonify(favorite_ship.to_dict()), 201
 
 
 
